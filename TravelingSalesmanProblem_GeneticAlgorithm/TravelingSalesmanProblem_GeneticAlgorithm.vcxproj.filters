@@ -23,5 +23,8 @@
     <ClInclude Include="Genome.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TravelingSalesmanProblem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
