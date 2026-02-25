@@ -231,6 +231,59 @@ private:
 		return child;
 	}
 
+	void displacementMutation(std::vector<int>& child)
+	{
+		int N = child.size();
+
+		if (N < 3) 
+			return; // with index 0 fixed, there's nothing meaningful to displace
+
+		// Pick i, j with 1 <= i <= j <= N-1
+		std::uniform_int_distribution<int> distI(1, N - 1);
+		int i = distI(_gen);
+
+		std::uniform_int_distribution<int> distJ(i, N - 1);
+		int j = distJ(_gen);
+
+		// If the segment is the entire mutable tail, there's nowhere to insert it
+		const int segLen = j - i + 1;
+		if (segLen == N - 1)
+			return;
+
+		// Pick k in [1..N-1] such that k is NOT in [i..j] and k != i-1 (to avoid no-op)
+		std::uniform_int_distribution<int> distK(1, N - 1);
+		int k = 0;
+		while(true)
+		{
+			k = distK(_gen);
+
+			if (k >= i && k <= j) 
+				continue;     // must be outside the segment
+
+			if (k == i - 1) 
+				continue;     // inserting right back where it was (no-op)
+
+			break;
+		}
+
+		// Perform displacement using O(N) rotate
+		// insert after k
+		auto b = child.begin();
+
+		if (k < i)
+		{
+			// ... k | (k+1..i-1) | [i..j] | ...
+			// -> ... k | [i..j] | (k+1..i-1) | ...
+			std::rotate(b + (k + 1), b + i, b + (j + 1));
+		}
+		else // k > j
+		{
+			// ... [i..j] | (j+1..k) | ...
+			// -> ... (j+1..k) | [i..j] | ...
+			std::rotate(b + i, b + (j + 1), b + (k + 1));
+		}
+	}
+
 	const std::vector<std::vector<int>>* _adjMat = nullptr;
 	int _NG = 0;
 	int _NPOP = 0;
