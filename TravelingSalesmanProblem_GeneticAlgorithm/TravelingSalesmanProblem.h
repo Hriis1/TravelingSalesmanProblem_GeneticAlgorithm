@@ -284,6 +284,31 @@ private:
 		}
 	}
 
+	int tournamentSelection(const std::vector<Genome>& generation, int numParticipants)
+	{
+		//generation should have as many elements as defined in _NPOP
+		assert(_NPOP == generation.size());
+
+		//Cant have more participants than num genomes in a generation
+		assert(_NPOP >= numParticipants);
+
+		//Generate random numParticipants participants and return the best of them
+		int currBestIdx = std::uniform_int_distribution<int>(0, _NPOP - 1)(_gen);
+		int currBestDist = generation[currBestIdx].dist;
+		for (size_t i = 1; i < numParticipants; i++)
+		{
+			int rIdx = std::uniform_int_distribution<int>(0, _NPOP - 1)(_gen);
+			int currDist = generation[rIdx].dist;
+			if (currDist < currBestDist) 
+			{
+				currBestDist = currDist;
+				currBestIdx = rIdx;
+			}
+		}
+
+		return currBestIdx;
+	}
+
 	const std::vector<std::vector<int>>* _adjMat = nullptr;
 	int _NG = 0;
 	int _NPOP = 0;

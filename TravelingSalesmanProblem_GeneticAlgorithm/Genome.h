@@ -10,7 +10,7 @@ struct Genome
 public:
 
 	//vars
-	int dist = 0;
+	int dist = INT_MAX;
 	std::vector<int> path;
 
 	//funcs
@@ -38,7 +38,7 @@ public:
         dist += adjMat[path[N - 1]][path[0]];
     }
 
-    void generatePath(const std::vector<std::vector<int>>& adjMat, std::mt19937& gen)
+    void generate(const std::vector<std::vector<int>>& adjMat, std::mt19937& gen)
     {
         int N = adjMat.size();
 
