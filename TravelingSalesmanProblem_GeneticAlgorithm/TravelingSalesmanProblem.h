@@ -9,10 +9,12 @@
 class TravelingSalesmanProblem
 {
 public:
-	TravelingSalesmanProblem(const std::vector<std::vector<int>>& adjMat, int ng, int npop, float pc, float pm, unsigned int seed = std::random_device{}())
-		:_adjMat(&adjMat), _NG(ng), _NPOP(npop), _PC(pc), _PM(pm), _currSolution(adjMat.size()), _gen(seed)
+	TravelingSalesmanProblem(const std::vector<std::vector<int>>& adjMat, int ng, int npop, int nnoimpr, float pc, float pm, unsigned int seed = std::random_device{}())
+		:_adjMat(&adjMat), _NG(ng), _NPOP(npop), _NNOIMPR(nnoimpr), _PC(pc), _PM(pm), _currSolution(adjMat.size()), _gen(seed)
 	{
 		_currSolution.dist = INT_MAX;
+
+		assert(_NPOP >= 3);
 	}
 
 	void reinit(const std::vector<std::vector<int>>& adjMat, int ng, int npop, float pc, float pm)
@@ -24,6 +26,8 @@ public:
 		_PM = pm;
 		_currSolution = Genome(adjMat.size());
 		_currSolution.dist = INT_MAX;
+
+		assert(_NPOP >= 3);
 	}
 
 	void reseed(unsigned int seed = std::random_device{}())
@@ -33,7 +37,119 @@ public:
 
 	void solve()
 	{
+		//Init variables
+		int noImproveCounter = _NNOIMPR;
+		int currBestDist = INT_MAX;
+		int nParticipants = std::min(4, _NPOP);
+		std::vector<Genome> currGen(_NPOP, Genome(_adjMat->size()));
+		std::vector<Genome> nextGen;
+		nextGen.reserve(_NPOP);
+		std::uniform_real_distribution<float> probDist(0.0f, 1.0f);
 
+		//Generate the 1st generation randomly
+		for (size_t i = 0; i < _NPOP; i++)
+		{
+			currGen[i].generate(*_adjMat, _gen);
+		}
+
+		//Get the idxes of the 2 best solutions
+		int bestIdx1 = -1;
+		int bestIdx2 = -1;
+
+		//helper func for finding the idxes of the 2 best solutions
+		auto findBestTwo = [&](const std::vector<Genome>& generation)
+		{
+			bestIdx1 = -1;
+			bestIdx2 = -1;
+
+			for (int i = 0; i < static_cast<int>(generation.size()); ++i)
+			{
+				if (bestIdx1 == -1 || generation[i].dist < generation[bestIdx1].dist)
+				{
+					bestIdx2 = bestIdx1;
+					bestIdx1 = i;
+				}
+				else if (i != bestIdx1 &&
+					(bestIdx2 == -1 || generation[i].dist < generation[bestIdx2].dist))
+				{
+					bestIdx2 = i;
+				}
+			}
+		};
+
+		//find the idxes of the 2 best solutions of this gen
+		findBestTwo(currGen);
+		currBestDist = currGen[bestIdx1].dist;
+
+		//Generate new _NG - 1 new generations or stop when there hasn't been an improvement for __NNOIMPR generations
+		for (size_t i = 1; i < _NG; i++)
+		{
+			//Reset next gen
+			nextGen.clear();
+			nextGen.reserve(_NPOP);
+
+			//Elitism - copy the top 2 genomes of curr gen
+			//best
+			nextGen.emplace_back(currGen[bestIdx1]);
+			//2nd best
+			nextGen.emplace_back(currGen[bestIdx2]);
+
+			//Fill remaining elements using tournament selection, crossover and mutation
+			for (size_t n = 2; n < _NPOP; n++)
+			{
+				//select parent 1 idx using tournament selection
+				int p1Idx = tournamentSelection(currGen, nParticipants);
+
+				//based on the _PC probabilty copy p1 or crossover with p2
+				if (probDist(_gen) < _PC)
+				{
+					// do crossover
+					int p2Idx = tournamentSelection(currGen, nParticipants);
+					auto childPath = edgeRecombinationCrossover(currGen[p1Idx].path, currGen[p2Idx].path);
+					nextGen.emplace_back(_adjMat->size());
+					nextGen[n].path = std::move(childPath);
+				}
+				else
+				{
+					// just copy p1
+					nextGen.emplace_back(currGen[p1Idx]);
+				}
+
+				//base on the _PM probability mutate the new child
+				if (probDist(_gen) < _PM)
+				{
+					displacementMutation(nextGen[n].path);
+				}
+
+				//Calculate the dist of the new child
+				nextGen[n].calculateDist(*_adjMat);
+			}
+
+			//Find the idxes of the 2 best solutions of this gen
+			findBestTwo(nextGen);
+
+			//A new best solution was found
+			if (currBestDist > nextGen[bestIdx1].dist) 
+			{
+				noImproveCounter = _NNOIMPR;
+				currBestDist = nextGen[bestIdx1].dist;
+			}
+			else //A new best solution was not found
+			{
+				//End algo if counter becomes 0
+				if (--noImproveCounter == 0)
+				{
+					_currSolution =  nextGen[bestIdx1];
+					return;
+				}
+			}
+
+			//Move curr gen to next gen
+			currGen = std::move(nextGen);
+		}
+
+		//Set the best solution
+		_currSolution = currGen[bestIdx1];
 	}
 
 	//getters
@@ -312,6 +428,7 @@ private:
 	const std::vector<std::vector<int>>* _adjMat = nullptr;
 	int _NG = 0;
 	int _NPOP = 0;
+	int _NNOIMPR = 0;
 	float _PC = 0.0f;
 	float _PM = 0.0f;
 	Genome _currSolution;
