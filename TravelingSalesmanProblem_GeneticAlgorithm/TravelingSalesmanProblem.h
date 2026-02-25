@@ -142,11 +142,36 @@ private:
 		//used cities
 		std::vector<char> used(N, 0);
 
+		// --- O(1) fallback support: keep a dynamic list of unused cities ---
+		std::vector<int> remaining;
+		remaining.reserve(N);
+		std::vector<int> posInRemaining(N, -1);
+
+		for (int c = 0; c < N; ++c)
+		{
+			posInRemaining[c] = (int)remaining.size();
+			remaining.push_back(c);
+		}
+
+		// helper: remove a city from the remaining list in O(1)
+		auto removeFromRemaining = [&](int city)
+		{
+			int idx = posInRemaining[city];
+			if (idx < 0) return; // already removed
+
+			int last = remaining.back();
+			remaining[idx] = last;
+			posInRemaining[last] = idx;
+
+			remaining.pop_back();
+			posInRemaining[city] = -1;
+		};
+
 		// first city
 		child[0] = p1[0];
 		used[child[0]] = 1;
+		removeFromRemaining(child[0]);
 		removeChosenFromAll(child[0]);
-
 
 		// ERX construction loop
 		for (int i = 1; i < N; ++i)
@@ -186,18 +211,14 @@ private:
 			}
 			else
 			{
-				// fallback: pick a random unused city
-				std::vector<int> unused;
-				unused.reserve(N - i);
-				for (int c = 0; c < N; ++c)
-					if (!used[c]) unused.push_back(c);
-
-				std::uniform_int_distribution<int> pick(0, (int)unused.size() - 1);
-				nextCity = unused[pick(_gen)];
+				// fallback: pick a random unused city (O(1) now)
+				std::uniform_int_distribution<int> pick(0, (int)remaining.size() - 1);
+				nextCity = remaining[pick(_gen)];
 			}
 
 			child[i] = nextCity;
 			used[nextCity] = 1;
+			removeFromRemaining(nextCity);
 
 			// critical ERX step: remove chosen city from all adjacency lists
 			removeChosenFromAll(nextCity);
