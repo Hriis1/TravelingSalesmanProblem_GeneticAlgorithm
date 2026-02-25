@@ -1,8 +1,10 @@
 #pragma once
 #include <climits>
+#include <array>
+#include <cassert>
 
 #include "Genome.h"
-#include <array>
+
 
 class TravelingSalesmanProblem
 {
@@ -50,9 +52,8 @@ private:
 	std::vector<int> edgeRecombinationCrossover(const std::vector<int>& p1, const std::vector<int>& p2) 
 	{
 
-		//helper vars for left and right idx
-		int leftNbrIdx = 0;
-		int rightNbrIdx = 0;
+		//Asert that both parents have correct size for correctness
+		assert(p2.size() == p1.size());
 
 		//Size of parent/child
 		int N = p1.size();
@@ -108,6 +109,9 @@ private:
 			// Add to adjacency list and increment deg, checking for duplicates
 			addUnique(city, leftCity);
 			addUnique(city, rightCity);
+
+			//Asert deg < 4 for correctness
+			assert(deg[city] <= 4);
 		}
 
 		// Build the child from adj matrix
