@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <random>
+#include <cassert>
 
 struct Genome
 {
@@ -17,6 +18,25 @@ public:
 	{
 		path.reserve(numCities);
 	}
+
+    void calculateDist(const std::vector<std::vector<int>>& adjMat)
+    {
+        //Sz of path
+        int N = path.size();
+
+        if (N == 0)
+            return;
+
+        //Asert path size == size of adj matrix
+        assert(N == adjMat.size());
+
+        //Calc dist
+        for (size_t i = 0; i < path.size() - 1; i++)
+            dist += adjMat[path[i]][path[i + 1]];
+
+        // add return to start
+        dist += adjMat[path[N - 1]][path[0]];
+    }
 
     void generatePath(const std::vector<std::vector<int>>& adjMat, std::mt19937& gen)
     {
