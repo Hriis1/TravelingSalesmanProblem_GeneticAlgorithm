@@ -18,7 +18,7 @@ public:
 		path.reserve(numCities);
 	}
 
-    void generatePath(const std::vector<std::vector<int>>& adjMat)
+    void generatePath(const std::vector<std::vector<int>>& adjMat, std::mt19937& gen)
     {
         int N = adjMat.size();
 
@@ -36,9 +36,6 @@ public:
             path.emplace_back(i);
 
         // 2. Shuffle everything except first element since city 0 is the start
-        static std::random_device rd;
-        static std::mt19937 gen(rd());
-
         std::shuffle(path.begin() + 1, path.end(), gen);
 
         // 3. Compute distance
