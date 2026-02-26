@@ -377,27 +377,24 @@ private:
 			if (k >= i && k <= j) 
 				continue;     // must be outside the segment
 
-			if (k == i - 1) 
-				continue;     // inserting right back where it was (no-op)
-
 			break;
 		}
 
 		// Perform displacement using O(N) rotate
-		// insert after k
+		// insert at index k
 		auto b = child.begin();
 
 		if (k < i)
 		{
 			// ... k | (k+1..i-1) | [i..j] | ...
 			// -> ... k | [i..j] | (k+1..i-1) | ...
-			std::rotate(b + (k + 1), b + i, b + (j + 1));
+			std::rotate(b + k , b + i, b + (j + 1));
 		}
 		else // k > j
 		{
 			// ... [i..j] | (j+1..k) | ...
 			// -> ... (j+1..k) | [i..j] | ...
-			std::rotate(b + i, b + (j + 1), b + (k + 1));
+			std::rotate(b + i, b + (j + 1), b + k);
 		}
 	}
 
