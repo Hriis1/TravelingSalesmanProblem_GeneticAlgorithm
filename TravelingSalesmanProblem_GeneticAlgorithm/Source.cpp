@@ -47,7 +47,7 @@ int main()
 
 	//Generate the matrix
 	std::cout << "Genereting matrix..." << std::endl;
-	adjMat = TSPUtils::generateTspAdjMatrix(10, TSPUtils::TspDatasetType::RandomUniform);
+	adjMat = TSPUtils::generateTspAdjMatrix(20, TSPUtils::TspDatasetType::RandomUniform);
 	std::cout << "Matrix generated!" << std::endl;
 
 	//Print the matrix
@@ -74,22 +74,22 @@ int main()
 	//set up params based on num cities
 	if (nCities <= 30)
 	{
-		ng = 300;
-		npop = 30;
-		nnoimpr = 25;
+		ng = 500;
+		npop = 50;
+		nnoimpr = 100;
 	}
 	else if (nCities >= 30 && nCities <= 100)
 	{
-		ng = 500;
+		ng = 1000;
 		npop = 100;
-		nnoimpr = 50;
+		nnoimpr = 100;
 
 	}
 	else // nCities > 100
 	{
-		ng = 1000;
+		ng = 2000;
 		npop = 200;
-		nnoimpr = 100;
+		nnoimpr = 200;
 	}
 
 	//Solve - unseeded
