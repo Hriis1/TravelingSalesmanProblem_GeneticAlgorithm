@@ -42,66 +42,88 @@ void printMatrix(const std::vector<std::vector<int>>& mat)
 
 int main() 
 {
+	//Number of runs to do
+	const int nRuns = 20;
+
 	//Input adj matrix
 	std::vector<std::vector<int>> adjMat;
 
+	//avgs
+	int genAvg = 0;
+	int nearestNeighborAvg = 0;
+
 	//Generate the matrix
-	std::cout << "Genereting matrix..." << std::endl;
-	adjMat = TSPUtils::generateTspAdjMatrix(20, TSPUtils::TspDatasetType::RandomUniform);
-	std::cout << "Matrix generated!" << std::endl;
-
-	//Print the matrix
-	std::cout << "Matrix:" << std::endl;
-	printMatrix(adjMat);
-
-	//if matrix is not square => invalid input
-	if (adjMat.size() == 0 || (adjMat.size() != adjMat[0].size()))
+	std::cout << "Running genetic algorithm and nearest neighbor " << nRuns <<  " times..." << std::endl;
+	for (size_t i = 0; i < nRuns; i++)
 	{
-		std::cout << "Invalid input!" << std::endl;
-		return -1;
+		std::cout << "Genereting matrix..." << std::endl;
+		adjMat = TSPUtils::generateTspAdjMatrix(31, TSPUtils::TspDatasetType::RandomUniform);
+		std::cout << "Matrix generated!" << std::endl;
+
+		//Print the matrix
+		std::cout << "Matrix:" << std::endl;
+		//printMatrix(adjMat);
+
+		//if matrix is not square => invalid input
+		if (adjMat.size() == 0 || (adjMat.size() != adjMat[0].size()))
+		{
+			std::cout << "Invalid input!" << std::endl;
+			return -1;
+		}
+
+		//Nubmer of cities
+		const int nCities = adjMat.size();
+
+		//Set up params;
+		int ng = 0; //number of generation
+		int npop = 0; //number of children in a generation
+		int nnoimpr = 0; //after how many generations with no improvement to stop
+		float pc = 0.90f; //probability of crossover
+		float pm = 0.05f; //probability of mutation
+
+		//set up params based on num cities
+		if (nCities <= 30)
+		{
+			ng = 500;
+			npop = 100;
+			nnoimpr = 100;
+		}
+		else if (nCities >= 30 && nCities <= 100)
+		{
+			ng = 1000;
+			npop = 200;
+			nnoimpr = 100;
+
+		}
+		else // nCities > 100
+		{
+			ng = 2000;
+			npop = 400;
+			nnoimpr = 200;
+		}
+
+		//Solve - unseeded
+		TravelingSalesmanProblem tsp = TravelingSalesmanProblem(adjMat, ng, npop, nnoimpr, pc, pm);
+		tsp.solve();
+
+		//Output path and dist
+		int genDist = tsp.getCurrSolutionDist();
+		int nearestNeighborDist = TSPUtils::nearestNeighborDistance(adjMat, 0);
+		std::cout << "Path: " << std::endl;
+		outputPath(tsp.getCurrSolutionPath());
+		std::cout << "Dist: " << genDist << std::endl;
+		std::cout << "Nearest-neighbor dist (start city 0): " << nearestNeighborDist << std::endl;
+
+		//Accumulate avg
+		genAvg += genDist;
+		nearestNeighborAvg += nearestNeighborDist;
+
 	}
 
-	//Nubmer of cities
-	const int nCities = adjMat.size();
-
-	//Set up params;
-	int ng = 0; //number of generation
-	int npop = 0; //number of children in a generation
-	int nnoimpr = 0; //after how many generations with no improvement to stop
-	float pc = 0.90f; //probability of crossover
-	float pm = 0.05f; //probability of mutation
-
-	//set up params based on num cities
-	if (nCities <= 30)
-	{
-		ng = 500;
-		npop = 50;
-		nnoimpr = 100;
-	}
-	else if (nCities >= 30 && nCities <= 100)
-	{
-		ng = 1000;
-		npop = 100;
-		nnoimpr = 100;
-
-	}
-	else // nCities > 100
-	{
-		ng = 2000;
-		npop = 200;
-		nnoimpr = 200;
-	}
-
-	//Solve - unseeded
-	TravelingSalesmanProblem tsp = TravelingSalesmanProblem(adjMat, ng, npop, nnoimpr, pc, pm);
-	tsp.solve();
-
-	//Output path and dist
-	std::cout << "Path: " << std::endl;
-	outputPath(tsp.getCurrSolutionPath());
-	std::cout << "Dist: " << tsp.getCurrSolutionDist() << std::endl;
-	std::cout << "Nearest-neighbor dist (start city 0): " << TSPUtils::nearestNeighborDistance(adjMat, 0) << std::endl;
-
+	//Do avg and display
+	genAvg /= nRuns;
+	nearestNeighborAvg /= nRuns;
+	std::cout << std::endl << std::endl << "Genetic algo avg: " << genAvg << std::endl << "Nearest neighbor avg: " << nearestNeighborAvg;
 
 	std::cin.get();
 	return 0;
