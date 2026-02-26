@@ -388,7 +388,7 @@ private:
 		{
 			// ... k | (k+1..i-1) | [i..j] | ...
 			// -> ... k | [i..j] | (k+1..i-1) | ...
-			std::rotate(b + k , b + i, b + (j + 1));
+			std::rotate(b + k, b + i, b + (j + 1));
 		}
 		else // k > j
 		{
