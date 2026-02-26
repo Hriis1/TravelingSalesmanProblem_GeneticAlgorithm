@@ -4,6 +4,7 @@
 #include <vector>
 #include <random>
 #include <algorithm>
+#include <climits>
 
 namespace TSPUtils
 {
@@ -55,7 +56,7 @@ namespace TSPUtils
                 pts.push_back({ x, y });
             }
 
-            // Optional: shuffle so the ìcorrectî tour isn't trivially 0..n-1
+            // Optional: shuffle so the ‚Äúcorrect‚Äù tour isn't trivially 0..n-1
             std::shuffle(pts.begin(), pts.end(), rng);
         }
         else // ClusteredDeceptive
@@ -115,4 +116,60 @@ namespace TSPUtils
         }
         return adj;
     }
+
+    int nearestNeighborDistance(const std::vector<std::vector<int>>& adjMatrix, int startCity = 0)
+    {
+        const int n = static_cast<int>(adjMatrix.size());
+
+        if (n == 0)
+            return 0;
+
+        if (n == 1)
+            return 0;
+
+        if (startCity < 0 || startCity >= n)
+            return -1;
+
+        for (const auto& row : adjMatrix)
+        {
+            if (static_cast<int>(row.size()) != n)
+                return -1;
+        }
+
+        std::vector<char> visited(n, 0);
+        visited[startCity] = 1;
+
+        int currCity = startCity;
+        int totalDist = 0;
+
+        for (int step = 1; step < n; ++step)
+        {
+            int nextCity = -1;
+            int bestDist = INT_MAX;
+
+            for (int city = 0; city < n; ++city)
+            {
+                if (visited[city])
+                    continue;
+
+                const int d = adjMatrix[currCity][city];
+                if (d < bestDist)
+                {
+                    bestDist = d;
+                    nextCity = city;
+                }
+            }
+
+            if (nextCity < 0)
+                return -1;
+
+            visited[nextCity] = 1;
+            totalDist += bestDist;
+            currCity = nextCity;
+        }
+
+        totalDist += adjMatrix[currCity][startCity];
+        return totalDist;
+    }
+
 }

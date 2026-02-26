@@ -100,6 +100,7 @@ int main()
 	std::cout << "Path: " << std::endl;
 	outputPath(tsp.getCurrSolutionPath());
 	std::cout << "Dist: " << tsp.getCurrSolutionDist() << std::endl;
+	std::cout << "Nearest-neighbor dist (start city 0): " << TSPUtils::nearestNeighborDistance(adjMat, 0) << std::endl;
 
 
 	std::cin.get();
