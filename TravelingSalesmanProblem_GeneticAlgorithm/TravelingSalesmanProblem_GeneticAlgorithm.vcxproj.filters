@@ -26,5 +26,8 @@
     <ClInclude Include="TravelingSalesmanProblem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TSPUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
