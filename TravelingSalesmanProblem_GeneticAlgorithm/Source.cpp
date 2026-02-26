@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 
+#include "TravelingSalesmanProblem.h"
+
 void outputPath(const std::vector<int>& path)
 {
 	const int sz = path.size();
@@ -26,5 +28,57 @@ void outputPath(const std::vector<int>& path)
 
 int main() 
 {
+	//Input adj matrix
+	std::vector<std::vector<int>> adjMat;
+
+	//if matrix is not square => invalid input
+	if (adjMat.size() == 0 || (adjMat.size() != adjMat[0].size()))
+	{
+		std::cout << "Invalid input!" << std::endl;
+		return -1;
+	}
+
+	//Nubmer of cities
+	const int nCities = adjMat.size();
+
+	//Set up params;
+	int ng = 0; //number of generation
+	int npop = 0; //number of children in a generation
+	int nnoimpr = 0; //after how many generations with no improvement to stop
+	float pc = 0.90f; //probability of crossover
+	float pm = 0.05f; //probability of mutation
+
+	//set up params based on num cities
+	if (nCities <= 30)
+	{
+		ng = 300;
+		npop = 30;
+		nnoimpr = 25;
+	}
+	else if (nCities >= 30 && nCities <= 100)
+	{
+		ng = 500;
+		npop = 100;
+		nnoimpr = 50;
+
+	}
+	else // nCities > 100
+	{
+		ng = 1000;
+		npop = 200;
+		nnoimpr = 100;
+	}
+
+	//Solve - unseeded
+	TravelingSalesmanProblem tsp = TravelingSalesmanProblem(adjMat, ng, npop, nnoimpr, pc, pm);
+	tsp.solve();
+
+	//Output path and dist
+	std::cout << "Path: " << std::endl;
+	outputPath(tsp.getCurrSolutionPath());
+	std::cout << "Dist: " << tsp.getCurrSolutionDist() << std::endl;
+
+
 	std::cin.get();
+	return 0;
 }
