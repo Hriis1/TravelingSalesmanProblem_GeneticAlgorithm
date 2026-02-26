@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <random>
 #include <cassert>
+#include <climits>
 
 struct Genome
 {
@@ -21,6 +22,9 @@ public:
 
     void calculateDist(const std::vector<std::vector<int>>& adjMat)
     {
+        //Reset dist
+        dist = 0;
+
         //Sz of path
         int N = path.size();
 

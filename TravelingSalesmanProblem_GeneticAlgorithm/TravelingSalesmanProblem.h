@@ -17,11 +17,12 @@ public:
 		assert(_NPOP >= 3);
 	}
 
-	void reinit(const std::vector<std::vector<int>>& adjMat, int ng, int npop, float pc, float pm)
+	void reinit(const std::vector<std::vector<int>>& adjMat, int ng, int nnoimpr, int npop, float pc, float pm)
 	{
 		_adjMat = &adjMat;
 		_NG = ng;
 		_NPOP = npop;
+		_NNOIMPR = nnoimpr;
 		_PC = pc;
 		_PM = pm;
 		_currSolution = Genome(adjMat.size());
@@ -137,7 +138,7 @@ public:
 			else //A new best solution was not found
 			{
 				//End algo if counter becomes 0
-				if (--noImproveCounter == 0)
+				if (--noImproveCounter <= 0)
 				{
 					_currSolution =  nextGen[bestIdx1];
 					return;
