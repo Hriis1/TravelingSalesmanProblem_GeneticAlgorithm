@@ -19,7 +19,7 @@ This project solves the Traveling Salesman Problem (TSP) in C++ using a genetic 
 - `TravelingSalesmanProblem_GeneticAlgorithm.sln`  
   Visual Studio solution file.
 
-## How the GA works (briefly)
+## How this implementation of GA works
 
 1. Create an initial population of random valid tours.
 2. Score each tour by total route distance (including return to start).
@@ -30,5 +30,3 @@ This project solves the Traveling Salesman Problem (TSP) in C++ using a genetic 
    - occasionally mutating a tour (displacement mutation).
 5. Repeat for many generations or stop early when there is no improvement.
 6. Return the best tour found.
-
-Short version: it searches for shorter and shorter routes by repeatedly keeping good solutions and mixing/mutating them.
