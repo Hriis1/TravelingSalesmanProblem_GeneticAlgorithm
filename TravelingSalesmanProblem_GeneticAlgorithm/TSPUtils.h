@@ -1,8 +1,8 @@
 #pragma once
 #define _USE_MATH_DEFINES
+#include <math.h>
 #include <vector>
 #include <random>
-#include <cmath>
 #include <algorithm>
 
 namespace TSPUtils

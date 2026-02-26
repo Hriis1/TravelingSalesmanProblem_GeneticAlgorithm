@@ -1,7 +1,9 @@
 #include <iostream>
 #include <vector>
+#include <iomanip>
 
 #include "TravelingSalesmanProblem.h"
+#include "TSPUtils.h"
 
 void outputPath(const std::vector<int>& path)
 {
@@ -26,10 +28,31 @@ void outputPath(const std::vector<int>& path)
 	std::cout << std::endl;
 }
 
+void printMatrix(const std::vector<std::vector<int>>& mat)
+{
+	for (const auto& row : mat)
+	{
+		for (const auto& val : row)
+		{
+			std::cout << std::setw(3) << val << " ";
+		}
+		std::cout << std::endl;
+	}
+}
+
 int main() 
 {
 	//Input adj matrix
 	std::vector<std::vector<int>> adjMat;
+
+	//Generate the matrix
+	std::cout << "Genereting matrix..." << std::endl;
+	adjMat = TSPUtils::generateTspAdjMatrix(10, TSPUtils::TspDatasetType::RandomUniform);
+	std::cout << "Matrix generated!" << std::endl;
+
+	//Print the matrix
+	std::cout << "Matrix:" << std::endl;
+	printMatrix(adjMat);
 
 	//if matrix is not square => invalid input
 	if (adjMat.size() == 0 || (adjMat.size() != adjMat[0].size()))
