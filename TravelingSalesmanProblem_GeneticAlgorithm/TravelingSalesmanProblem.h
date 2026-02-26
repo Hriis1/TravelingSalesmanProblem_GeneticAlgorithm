@@ -63,7 +63,7 @@ public:
 			bestIdx1 = -1;
 			bestIdx2 = -1;
 
-			for (int i = 0; i < static_cast<int>(generation.size()); ++i)
+			for (size_t i = 0; i < static_cast<int>(generation.size()); ++i)
 			{
 				if (bestIdx1 == -1 || generation[i].dist < generation[bestIdx1].dist)
 				{
@@ -268,7 +268,7 @@ private:
 		remaining.reserve(N);
 		std::vector<int> posInRemaining(N, -1);
 
-		for (int c = 0; c < N; ++c)
+		for (size_t c = 0; c < N; ++c)
 		{
 			posInRemaining[c] = (int)remaining.size();
 			remaining.push_back(c);
@@ -295,7 +295,7 @@ private:
 		removeChosenFromAll(child[0]);
 
 		// ERX construction loop
-		for (int i = 1; i < N; ++i)
+		for (size_t i = 1; i < N; ++i)
 		{
 			int lastCity = child[i - 1];
 
