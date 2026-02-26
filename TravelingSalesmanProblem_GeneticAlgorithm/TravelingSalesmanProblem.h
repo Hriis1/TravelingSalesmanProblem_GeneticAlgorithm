@@ -257,7 +257,7 @@ private:
 				int u = adjMatrix[chosen][i];
 				removeNeighbor(u, chosen);
 			}
-			deg[chosen] = 0; // clear chosen's list
+			//deg[chosen] = 0; // clear chosen's list
 		};
 
 		//used cities
