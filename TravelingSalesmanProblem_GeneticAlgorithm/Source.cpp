@@ -42,8 +42,14 @@ void printMatrix(const std::vector<std::vector<int>>& mat)
 
 int main() 
 {
+	//If brute force should be done
+	bool doBruteForce = true;
+
+	//If initial gen should be inited with NN
+	bool initWithNN = false;
+
 	//Number of runs to do
-	const int nRuns = 30;
+	const int nRuns = 10;
 
 	//Input adj matrix
 	std::vector<std::vector<int>> adjMat;
@@ -51,13 +57,14 @@ int main()
 	//avgs
 	int genAvg = 0;
 	int nearestNeighborAvg = 0;
+	int optimalAvg = 0;
 
 	//Generate the matrix
 	std::cout << "Running genetic algorithm and nearest neighbor " << nRuns <<  " times..." << std::endl;
 	for (size_t i = 0; i < nRuns; i++)
 	{
 		std::cout << "Genereting matrix..." << std::endl;
-		adjMat = TSPUtils::generateTspAdjMatrix(11, TSPUtils::TspDatasetType::RandomUniform);
+		adjMat = TSPUtils::generateTspAdjMatrix(11, TSPUtils::TspDatasetType::ClusteredDeceptive);
 		std::cout << "Matrix generated!" << std::endl;
 
 		//Print the matrix
@@ -82,7 +89,7 @@ int main()
 		float pm = 0.05f; //probability of mutation
 
 		//set up params based on num cities
-		if (nCities <= 30)
+		if (nCities < 30)
 		{
 			ng = 500;
 			npop = 100;
@@ -104,7 +111,7 @@ int main()
 
 		//Solve - unseeded
 		TravelingSalesmanProblem tsp = TravelingSalesmanProblem(adjMat, ng, npop, nnoimpr, pc, pm);
-		tsp.solve(true);
+		tsp.solve(initWithNN);
 
 		//Output path and dist
 		int genDist = tsp.getCurrSolutionDist();
@@ -118,14 +125,26 @@ int main()
 		genAvg += genDist;
 		nearestNeighborAvg += nearestNeighborDist;
 
+		if (doBruteForce) {
+			int optimalDist = TSPUtils::bruteForceOptimal(adjMat, 0);
+			std::cout << "Optimal dist (start city 0): " << optimalDist << std::endl;
+			optimalAvg += optimalDist;
+		}
 	}
 
 	//Do avg and display
 	genAvg /= nRuns;
 	nearestNeighborAvg /= nRuns;
-	float pIncrease = (float)genAvg / nearestNeighborAvg;
+	float pDecrease = (float)genAvg / nearestNeighborAvg;
 	std::cout << std::endl << std::endl << "Genetic algo avg: " << genAvg << std::endl << "Nearest neighbor avg: " << nearestNeighborAvg << std::endl;
-	std::cout << "% decreese in tour lenght: " << (int)(pIncrease * 100) << "%";
+	std::cout << "% decreese in tour lenght from NN: " << (pDecrease * 100) << "%" << std::endl;
+
+	if (doBruteForce) {
+		optimalAvg /= nRuns;
+		pDecrease = (float)genAvg / optimalAvg;
+		std::cout << std::endl << std::endl << "Optimal avg: " << optimalAvg << std::endl;
+		std::cout << "% decreese in tour lenght from OPTIMAL: " << (pDecrease * 100) << "%";
+	}
 
 	std::cin.get();
 	return 0;

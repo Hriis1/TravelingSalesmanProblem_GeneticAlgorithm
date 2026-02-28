@@ -117,6 +117,63 @@ namespace TSPUtils
         return adj;
     }
 
+    int bruteForceOptimal(const std::vector<std::vector<int>>& adjMatrix, int startCity = 0)
+    {
+        const int n = (int)adjMatrix.size();
+
+        // Edge cases
+        if (n == 0) 
+            return 0;
+
+        if (n == 1)
+            return 0;
+
+        if (startCity < 0 || startCity >= n) 
+            return -1;
+
+        for (const auto& row : adjMatrix)
+            if ((int)row.size() != n)
+                return -1;
+
+        // Build list of cities excluding startCity
+        std::vector<int> perm;
+        perm.reserve(n - 1);
+        for (int i = 0; i < n; ++i)
+            if (i != startCity)
+                perm.push_back(i);
+
+        // perm is already sorted by construction
+        long long best = std::numeric_limits<long long>::max();
+
+        do
+        {
+            long long dist = 0;
+
+            int prev = startCity;
+            for (int city : perm)
+            {
+                dist += adjMatrix[prev][city];
+                prev = city;
+
+                // small prune (optional)
+                if (dist >= best) break;
+            }
+
+            if (dist < best)
+            {
+                dist += adjMatrix[prev][startCity]; // close the tour
+
+                if (dist < best) 
+                    best = dist;
+            }
+        } while (std::next_permutation(perm.begin(), perm.end()));
+
+        if (best > std::numeric_limits<int>::max()) 
+            return INT_MAX; // avoid overflow on return
+
+        return (int)best;
+    }
+
     int nearestNeighborDistance(const std::vector<std::vector<int>>& adjMatrix, int startCity = 0)
     {
         const int n = adjMatrix.size();
