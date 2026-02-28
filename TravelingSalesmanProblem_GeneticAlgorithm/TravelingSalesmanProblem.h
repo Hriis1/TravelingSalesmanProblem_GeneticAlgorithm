@@ -4,6 +4,7 @@
 #include <cassert>
 
 #include "Genome.h"
+#include "TSPUtils.h"
 
 
 class TravelingSalesmanProblem
@@ -36,7 +37,7 @@ public:
 		_gen.seed(seed);
 	}
 
-	void solve()
+	void solve(bool useNNIn1stGen = false)
 	{
 		//Init variables
 		int noImproveCounter = _NNOIMPR;
@@ -47,8 +48,17 @@ public:
 		nextGen.reserve(_NPOP);
 		std::uniform_real_distribution<float> probDist(0.0f, 1.0f);
 
-		//Generate the 1st generation randomly
-		for (size_t i = 0; i < _NPOP; i++)
+		//Generate the 1st generation
+		size_t i = 0;
+		if (useNNIn1stGen)
+		{
+			//Use nearest neighbor as a child in the initial generation
+			currGen[i].path = TSPUtils::nearestNeighborPath(*_adjMat, 0);
+			currGen[i].calculateDist(*_adjMat);
+			i++;
+		}
+		//Generare the rest randomly
+		for (; i < _NPOP; i++)
 		{
 			currGen[i].generate(*_adjMat, _gen);
 		}

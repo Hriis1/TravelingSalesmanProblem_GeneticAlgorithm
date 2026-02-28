@@ -57,7 +57,7 @@ int main()
 	for (size_t i = 0; i < nRuns; i++)
 	{
 		std::cout << "Genereting matrix..." << std::endl;
-		adjMat = TSPUtils::generateTspAdjMatrix(10, TSPUtils::TspDatasetType::RandomUniform);
+		adjMat = TSPUtils::generateTspAdjMatrix(11, TSPUtils::TspDatasetType::RandomUniform);
 		std::cout << "Matrix generated!" << std::endl;
 
 		//Print the matrix
@@ -104,7 +104,7 @@ int main()
 
 		//Solve - unseeded
 		TravelingSalesmanProblem tsp = TravelingSalesmanProblem(adjMat, ng, npop, nnoimpr, pc, pm);
-		tsp.solve();
+		tsp.solve(true);
 
 		//Output path and dist
 		int genDist = tsp.getCurrSolutionDist();
@@ -123,7 +123,9 @@ int main()
 	//Do avg and display
 	genAvg /= nRuns;
 	nearestNeighborAvg /= nRuns;
-	std::cout << std::endl << std::endl << "Genetic algo avg: " << genAvg << std::endl << "Nearest neighbor avg: " << nearestNeighborAvg;
+	float pIncrease = (float)genAvg / nearestNeighborAvg;
+	std::cout << std::endl << std::endl << "Genetic algo avg: " << genAvg << std::endl << "Nearest neighbor avg: " << nearestNeighborAvg << std::endl;
+	std::cout << "% decreese in tour lenght: " << (int)(pIncrease * 100) << "%";
 
 	std::cin.get();
 	return 0;
