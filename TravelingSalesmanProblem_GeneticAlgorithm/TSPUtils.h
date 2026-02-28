@@ -119,8 +119,9 @@ namespace TSPUtils
 
     int nearestNeighborDistance(const std::vector<std::vector<int>>& adjMatrix, int startCity = 0)
     {
-        const int n = static_cast<int>(adjMatrix.size());
+        const int n = adjMatrix.size();
 
+        // Edge cases
         if (n == 0)
             return 0;
 
@@ -131,10 +132,8 @@ namespace TSPUtils
             return -1;
 
         for (const auto& row : adjMatrix)
-        {
-            if (static_cast<int>(row.size()) != n)
+            if (row.size() != n)
                 return -1;
-        }
 
         std::vector<char> visited(n, 0);
         visited[startCity] = 1;
@@ -170,6 +169,69 @@ namespace TSPUtils
 
         totalDist += adjMatrix[currCity][startCity];
         return totalDist;
+    }
+
+    std::vector<int> nearestNeighborPath(const std::vector<std::vector<int>>& adjMatrix, int startCity = 0)
+    {
+        const int n = adjMatrix.size();
+
+        // Edge cases
+        if (n == 0) 
+            return {};
+
+        if (n == 1)
+        {
+            if (startCity != 0) 
+                return {}; // invalid start for 1-city matrix
+
+            return { 0 }; //just start city
+        }
+
+        // Validate start city
+        if (startCity < 0 || startCity >= n) 
+            return {};
+
+        // Validate matrix is n x n
+        for (const auto& row : adjMatrix)
+            if (row.size() != n) 
+                return {};
+
+        std::vector<char> visited(n, 0);
+        visited[startCity] = 1;
+
+        std::vector<int> path;
+        path.reserve(n);
+        path.push_back(startCity);
+
+        int currCity = startCity;
+
+        for (int step = 1; step < n; ++step)
+        {
+            int nextCity = -1;
+            int bestDist = INT_MAX;
+
+            for (int city = 0; city < n; ++city)
+            {
+                if (visited[city]) 
+                    continue;
+
+                const int d = adjMatrix[currCity][city];
+                if (d < bestDist)
+                {
+                    bestDist = d;
+                    nextCity = city;
+                }
+            }
+
+            if (nextCity < 0) 
+                return {}; // shouldn't happen
+
+            visited[nextCity] = 1;
+            path.push_back(nextCity);
+            currCity = nextCity;
+        }
+
+        return path;
     }
 
 }

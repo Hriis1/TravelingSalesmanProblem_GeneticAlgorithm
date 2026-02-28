@@ -43,7 +43,7 @@ void printMatrix(const std::vector<std::vector<int>>& mat)
 int main() 
 {
 	//Number of runs to do
-	const int nRuns = 20;
+	const int nRuns = 30;
 
 	//Input adj matrix
 	std::vector<std::vector<int>> adjMat;
@@ -57,11 +57,11 @@ int main()
 	for (size_t i = 0; i < nRuns; i++)
 	{
 		std::cout << "Genereting matrix..." << std::endl;
-		adjMat = TSPUtils::generateTspAdjMatrix(31, TSPUtils::TspDatasetType::RandomUniform);
+		adjMat = TSPUtils::generateTspAdjMatrix(10, TSPUtils::TspDatasetType::RandomUniform);
 		std::cout << "Matrix generated!" << std::endl;
 
 		//Print the matrix
-		std::cout << "Matrix:" << std::endl;
+		//std::cout << "Matrix:" << std::endl;
 		//printMatrix(adjMat);
 
 		//if matrix is not square => invalid input
