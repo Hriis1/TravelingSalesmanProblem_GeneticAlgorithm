@@ -14,7 +14,7 @@ This project solves the Traveling Salesman Problem (TSP) in C++ using a genetic 
   Defines one candidate tour (a genome): city order + total tour distance, with helpers to generate and score tours.
 
 - `TravelingSalesmanProblem_GeneticAlgorithm/TSPUtils.h`  
-  Utility functions: generate TSP adjacency matrices from points and compute a nearest-neighbor baseline distance.
+  Utility functions: generate TSP adjacency matrices from points and compute a nearest-neighbor distance/solutiion.
 
 ## How this implementation of GA works
 
